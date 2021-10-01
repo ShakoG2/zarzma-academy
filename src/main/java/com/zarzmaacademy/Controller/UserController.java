@@ -1,4 +1,4 @@
-package com.zarzmaacademy;
+package com.zarzmaacademy.Controller;
 
 import com.zarzmaacademy.model.User;
 import org.springframework.web.bind.annotation.RequestBody;

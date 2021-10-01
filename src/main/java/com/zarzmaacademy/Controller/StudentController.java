@@ -1,7 +1,8 @@
-package com.zarzmaacademy.student;
+package com.zarzmaacademy.Controller;
 
 
 import com.zarzmaacademy.model.Student;
+import com.zarzmaacademy.dao.StudentRepository;
 import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

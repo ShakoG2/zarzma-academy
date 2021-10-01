@@ -1,12 +1,17 @@
 package com.zarzmaacademy.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @EqualsAndHashCode()
@@ -24,16 +29,13 @@ public class User {
 	@Column(name = "user_name")
 	private String userName;
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	//@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Column(name = "password")
 	private String password;
 
-
-	@Column(name = "active")
-	private Boolean active;
-
-//	@JsonManagedReference
-//	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, mappedBy = "user")
-//	@Where(clause = "active = true")
-//	private List<UserPermission> userPermissions;
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "user_role",
+			joinColumns = @JoinColumn(name="USER_ID", referencedColumnName="ID"),
+			inverseJoinColumns = @JoinColumn(name="ROLE_ID", referencedColumnName="ID"))
+	private Set<Role> roles = new HashSet<>();
 }
