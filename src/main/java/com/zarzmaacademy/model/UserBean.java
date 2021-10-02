@@ -37,17 +37,17 @@ public class UserBean implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return this.authorities;
 	}
 
 	@Override
 	public String getPassword() {
-		return null;
+		return this.password;
 	}
 
 	@Override
 	public String getUsername() {
-		return null;
+		return this.userName;
 	}
 
 	@Override
@@ -68,5 +68,17 @@ public class UserBean implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+	@Override
+	public boolean equals(Object rhs) {
+		if (rhs instanceof UserBean) {
+			return userName.equals(((UserBean) rhs).userName);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return userName.hashCode();
 	}
 }

@@ -14,9 +14,20 @@ public class Role {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+
+	public Role(Integer id, Roles roleName) {
+		this.id = id;
+		this.roleName = roleName;
+	}
+
 	@Enumerated(EnumType.STRING)
 	@Column(name="name")
 	private Roles roleName;
+
+	public Role() {
+
+	}
+
 	public Integer getId() {
 		return id;
 	}

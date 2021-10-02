@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -37,7 +39,7 @@ public class AuthController {
 	JwtTokenUtil jwtTokenUtil;
 
 	@PostMapping("login")
-	public ResponseEntity<?> userLogin(@RequestBody User user) throws BadCredentialsException {
+	public ResponseEntity<?> userLogin(@Valid @RequestBody User user) throws BadCredentialsException {
 		//System.out.println("AuthController -- userLogin");
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
@@ -45,12 +47,12 @@ public class AuthController {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String token = jwtTokenUtil.generateJwtToken(authentication);
 		UserBean userBean = (UserBean) authentication.getPrincipal();
-//		List<String> roles = userBean.getAuthorities().stream()
-//				.map(GrantedAuthority::getAuthority)
-//				.collect(Collectors.toList());
+		List<String> roles = userBean.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
 		AuthRes authResponse = new AuthRes();
 		authResponse.setToken(token);
-		//authResponse.setRoles(roles);
+		authResponse.setRoles(roles);
 		return ResponseEntity.ok(authResponse);
 	}
 
@@ -64,28 +66,30 @@ public class AuthController {
 ////		}
 		User user = new User();
 		Set<Role> roles = new HashSet<>();
-//		//if (roles.isEmpty()) return ResponseEntity.badRequest().body("not fount ");
 		user.setUserName(signupRequest.getUserName());
-//		//user.setEmail(signupRequest.getEmail());
+
+		Role role = new Role();
+		role.setRoleName(Roles.ROLE_USER);
+		roleRepository.save(role);
+
 		user.setPassword(encoder.encode(signupRequest.getPassword()));
-//		//System.out.println("Encoded password--- " + user.getPassword());
 		String[] roleArr = signupRequest.getRoles();
 //
 		if (roleArr == null || roleArr.length == 0) {
 			roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
 		}
-//		for (String role : roleArr) {
-//			switch (role) {
-//				case "admin":
-//					roles.add(roleRepository.findByRoleName(Roles.ROLE_ADMIN).get());
-//					break;
-//				case "user":
-//					roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
-//					break;
-//				default:
-//					return ResponseEntity.badRequest().body("Specified role not found");
-//			}
-//		}
+		for (int i = 0; i < Objects.requireNonNull(roleArr).length; i++) {
+			switch (roleArr[i]) {
+				case "admin":
+					roles.add(roleRepository.findByRoleName(Roles.ROLE_ADMIN).get());
+					break;
+				case "user":
+					roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
+					break;
+				default:
+					return ResponseEntity.badRequest().body("Specified role not found");
+			}
+		}
 		user.setRoles(roles);
 		userRepository.save(user);
 		return ResponseEntity.ok("User signed up successfully");

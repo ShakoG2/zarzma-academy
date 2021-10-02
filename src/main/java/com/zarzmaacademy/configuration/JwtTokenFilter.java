@@ -52,7 +52,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
 			// remove "Bearer "
-			return token.substring(7, token.length());
+			return token.split(" ")[1].trim();
 		}
 		return null;
 	}
